@@ -1,0 +1,2 @@
+RewriteEngine On
+RewriteRule ^tsoftware-SGVC/assets/image/system/course/TSoftec\.png$ - [F]
