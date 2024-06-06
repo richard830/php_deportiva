@@ -164,6 +164,29 @@ class UserModel
 
 
 
+    public function createRegisterUsers(
+        $Uname,
+                $Ulastname,
+                $Ucredential,
+                $Ubirthdate,
+                $Ugender,
+                $Uemail,
+                $passwordHash,
+                $Uwhatsapp
+    ) {
+        $query = "INSERT INTO users 
+        ( Uname, Ulastname, Ucredential, Ubirthdate, Ugender, Uemail, Upassword, Uwhatsapp, Ustatus, UdateCreated) VALUES 
+        (?, ?, ?, ?, ?, ?, ?, ?, 1, NOW())";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bind_param("ssssssss", $Uname, $Ulastname, $Ucredential, $Ubirthdate, $Ugender, $Uemail, $passwordHash, $Uwhatsapp);
+        $response = $stmt->execute();
+        $userId = $stmt->insert_id;
+        $stmt->close();
+        return $response ? $userId : false;
+    }
+
+
+
     public function createUsers(
         $name,
         $lastname,
@@ -218,6 +241,17 @@ class UserModel
         $sql = "SELECT COUNT(*) AS count FROM users WHERE Unickname = ?";
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param("s", $nickname);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+        $stmt->close();
+        return $row['count'] == 1;
+    }
+    public function uniqueWhatpsapp($whatsapp)
+    {
+        $sql = "SELECT COUNT(*) AS count FROM users WHERE Uwhatsapp = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("s", $whatsapp);
         $stmt->execute();
         $result = $stmt->get_result();
         $row = $result->fetch_assoc();

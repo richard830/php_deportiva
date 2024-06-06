@@ -1,7 +1,7 @@
 <?php
 $authenticateController = new AuthenticateController;
 
-$authenticateController->signin();
+ $authenticateController->signin();
 ?>
 
 <?php include 'auth-validation.php'; ?>

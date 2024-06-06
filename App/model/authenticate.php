@@ -48,6 +48,10 @@ public function loginHistory($email)
     }
 }
 
+
+
+
+
 public function signin($email, $password)
 {
     $sql = "SELECT 

@@ -54,6 +54,90 @@ class UserController
    
     // FIN DE PAGINACION
 
+
+
+    public function createRegisterUser()
+    {
+        if (isset($_POST["user-register"])) {
+
+            echo "<script>
+                function keepFormUser(){
+                    document.getElementById('Uname').value = '" . htmlspecialchars($_POST['Uname'], ENT_QUOTES) . "';
+                    document.getElementById('Ulastname').value = '" . htmlspecialchars($_POST['Ulastname'], ENT_QUOTES) . "';
+                    document.getElementById('Ucredential').value = '" . htmlspecialchars($_POST['Ucredential'], ENT_QUOTES) . "';
+                    document.getElementById('Ubirthdate').value = '" . htmlspecialchars($_POST['Ubirthdate'], ENT_QUOTES) . "';
+                    document.getElementById('Ugender').value = '" . htmlspecialchars($_POST['Ugender'], ENT_QUOTES) . "';
+                    document.getElementById('Uwhatsapp').value = '" . htmlspecialchars($_POST['Uwhatsapp'], ENT_QUOTES) . "';
+                    document.getElementById('Uemail').value = '" . htmlspecialchars($_POST['Uemail'], ENT_QUOTES) . "';
+                    document.getElementById('Upassword').value = '" . htmlspecialchars($_POST['Upassword'], ENT_QUOTES) . "';
+                   
+                }
+            </script>";
+            
+            $Uname = $_POST['Uname'];
+            $Ulastname = $_POST['Ulastname'];
+            $Ucredential = $_POST['Ucredential'];
+            $Ubirthdate = $_POST['Ubirthdate'];
+            $Ugender = $_POST['Ugender'];
+            $Uwhatsapp = $_POST['Uwhatsapp'];
+            $Uemail = $_POST['Uemail'];
+            $Upassword = $_POST['Upassword'];
+        
+            $passwordHash = password_hash($Upassword, PASSWORD_DEFAULT);
+
+            // $defaultImage = "users.jpg";
+
+            if ($this->model->uniqueEmail($Uemail)) {
+                echo '<script src="./alert/duplicateEmail.js"></script>';
+                echo '<script> document.addEventListener("DOMContentLoaded", function() {keepFormUser(); });</script>';
+                return;
+            } else if ($this->model->uniqueWhatpsapp($Uwhatsapp)) {
+                echo '<script src="./alert/duplicateWhatpsapp.js"></script>';
+                echo '<script> document.addEventListener("DOMContentLoaded", function() {keepFormUser(); });</script>';
+                return;
+            } else if ($this->model->uniqueCredential($Ucredential)) {
+                echo '<script src="./alert/duplicateCedula.js"></script>';
+                echo '<script> document.addEventListener("DOMContentLoaded", function() {keepFormUser(); });</script>';
+                return;
+            }
+
+            // if (!empty($_FILES['imagen']['name'])) {
+            //     $nameTypeImage = $_FILES['imagen']['name'];
+            //     $routeImage = $_FILES['imagen']['tmp_name'];
+            //     $directory = "./../assets/image/system/user/";
+            //     $routeDestination = $directory . $nameTypeImage;
+
+            //     if (!file_exists($directory)) {
+            //         mkdir($directory, 0777, true);
+            //     }
+
+            //     if (move_uploaded_file($routeImage, $routeDestination)) {
+            //         $nameRoute = $routeDestination;
+            //         echo $nameRoute;
+            //     } else {
+            //         echo '<script src="./alert/registerError.js"></script>';
+            //         echo '<script> document.addEventListener("DOMContentLoaded", function() {keepFormUser(); });</script>';
+            //     }
+            // } else {
+            //     $nameTypeImage = $defaultImage;
+            // }
+
+
+            $userId = $this->model->createRegisterUsers($Uname, $Ulastname, $Ucredential,  $Ubirthdate, $Ugender, $Uemail, $passwordHash, $Uwhatsapp );
+            if ($userId) {
+                $this->model->addUserRole($userId, 6);
+                echo '<script src="./alert/registerSuccess.js"></script>';
+                echo '<script> setTimeout(function(){ window.location = "auth-signin"; }, 500); </script>';
+            } else {
+                echo '<script src="./alert/registerError.js"></script>';
+                echo '<script> document.addEventListener("DOMContentLoaded", function() {keepFormUser(); });</script>';
+            }
+        }
+    }
+
+
+
+
     public function createUser()
     {
         if (isset($_POST["user-add"])) {
@@ -140,6 +224,8 @@ class UserController
             }
         }
     }
+
+
 
     public function deleteUser($id)
     {
